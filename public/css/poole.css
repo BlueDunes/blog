@@ -167,19 +167,17 @@ pre {
   font-size: .8rem;
   line-height: 1.4;
   white-space: pre;
-  white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
   background-color: #f9f9f9;
+  width: 99%;
+  overflow-x: auto;
 }
 pre code {
   padding: 0;
   font-size: 100%;
   color: inherit;
   background-color: transparent;
-  white-space: pre;
-  width:300px;
-  overflow:scroll;
 }
 
 /* Pygments via Jekyll */
