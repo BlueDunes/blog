@@ -1,0 +1,15 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            DataMary
+tagline:          'Data Science'
+description:      'Data Science and more'
+url:              https://bluedunes.github.io
+baseurl:          
+
+paginate:         5

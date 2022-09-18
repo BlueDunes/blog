@@ -1,0 +1,41 @@
+---
+layout: post
+title: Clearing images from Obsidian 
+---
+[Obsidian](https://obsidian.md/) is an open source app that helps you create a second brain based on a local folder of plain text markdown files.
+I have been using this tool for a while and I love it. I use it to manage my daily and weekly tasks, to track habits, to take notes, to store cooking recipes and much more.
+Today I am going to share how I solved a small issue that I encountered when copying and pasting images to my vault. When you take a screen shot and paste the image to one of your notes, Obsidian adds the image file to your vault and creates an embedded link in your note. This is something I find myself doing very often.
+However, if you later delete the note, or delete the link from your note because you no longer need it, the image file remains in your vault. Overtime, this can create a lot of noise and use unnecessary space in your hard drive. You can manually check which images are not in use and delete them, but it's time consuming. In order to solve this issue I wrote this simple script that checks if the images in your vault appear in your notes and if they don't, if removes them. It also outputs a list of deleted images so that you can double check that the correct images were deleted.
+You can check and download the complete script [here](https://github.com/BlueDunes/obsidian_cleanup_images.git).
+Please bear in mind that this code deletes the files permanently. I wrote it for my personal use and share it here in case someone finds it useful. It works for me, but it might not work for you.
+I advise you to:
+-   Try the code first commenting the section that deletes the images and check the list of images that the script intends to delete.
+-   Have a backup copy of your vault before running the script.
+Also, this script only deals with .png images and I wrote it for a macOS terminal. If you have some other kind of media file or if you are working on Linux or Windows, you may need to modify the script.
+Let's check the key parts of the code.
+
+```bash
+cd PATH_TO_YOUR_VAULT
+```
+This goes to the directory where your vault is located.
+
+```bash
+for pic in `find . -type f -name "*.png"`; do
+    massaged_pic=`echo $pic | rev | cut -d '/' -f1 | rev`
+
+    occurrence=`grep -R $massaged_pic"]" . | wc -l`
+	
+    if [ "$occurrence" -eq "0" ]; then
+        rm $pic
+        echo "removed: "$pic
+        echo $pic >> $list_img
+    fi
+
+done
+```
+Finds all the .png files and for each of them cuts the string with the path at the "/" and takes the last part, which is the file name. Later, it counts the occurrences of that image in the vault. `-R` means it's checking inside the current folder and in it's subfolders. If the image doesn't appear in the vault, it deletes it and prints the name on the terminal, as well as adding it to a file containing a list of deleted images.
+Before running the file you need to write the path to your vault in the variable "path_to_vault" or next to the `cd` command. In order to run the file use on the terminal:
+```
+./cleanup_image_obs.sh
+```
+I hope this is useful for someone. And remember, run this code under your own responsibility! It does delete the files permanently!
