@@ -179,7 +179,7 @@ pre code {
   background-color: transparent;
   white-space: pre;
   width:300px;
-  overflow:auto;
+  overflow-x:auto;
 }
 
 /* Pygments via Jekyll */
