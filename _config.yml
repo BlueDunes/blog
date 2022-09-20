@@ -10,7 +10,8 @@ title:            DataMary
 tagline:          'Data Science'
 description:      'Data Science and more'
 url:              https://bluedunes.github.io
-baseurl:          
+baseurl:
+excerpt_separator: <!--more-->  
 
 paginate:         5
 

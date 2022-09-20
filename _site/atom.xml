@@ -4,7 +4,7 @@
  <title>DataMary</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2022-09-19T16:06:48-07:00</updated>
+ <updated>2022-09-19T20:47:06-07:00</updated>
  <id>http://localhost:4000</id>
  <author>
    <name></name>
@@ -17,7 +17,7 @@
    <link href="http://localhost:4000/2022/09/16/PCA_R/"/>
    <updated>2022-09-16T00:00:00-07:00</updated>
    <id>http://localhost:4000/2022/09/16/PCA_R</id>
-   <content type="html">&lt;p&gt;If we are working with high dimensional data we will most probably want to reduce the dimensionality before we start working on our models. One option we have is to drop features that we consider less relevant, either because they contain a high proportion of missing values, because they have low variance or because their correlation with the target variable is low. Another option, or sometimes a second step after dropping a few columns, is using some kind of regularization technique. Principal Components Analysis (PCA) is a very commonly used one that is based in linear algebra concepts. On top of reducing dimensionality, it also allows us to better represent the information contained in our data by determining which variables are more relevant.&lt;/p&gt;
+   <content type="html">&lt;p&gt;If we are working with high dimensional data we will most probably want to reduce the dimensionality before we start working on our models. One option we have is to drop features that we consider less relevant, either because they contain a high proportion of missing values, because they have low variance or because their correlation with the target variable is low. Another option, or sometimes a second step after dropping a few columns, is using some kind of regularization technique. Principal Components Analysis (PCA) is a very commonly used one that is based in linear algebra concepts. &lt;!--more--&gt;On top of reducing dimensionality, it also allows us to better represent the information contained in our data by determining which variables are more relevant.&lt;/p&gt;
 
 &lt;p&gt;We will work with the popular Boston Housing dataset available on the UCI Machine Learning Repository &lt;a href=&quot;https://archive.ics.uci.edu/ml/machine-learning-databases/housing/&quot;&gt;website&lt;/a&gt;.&lt;/p&gt;
 &lt;ul&gt;
@@ -56,7 +56,7 @@
 &lt;p&gt;Here we can see the structure of our dataset.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;str(housing)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 'data.frame':	506 obs. of  14 variables:
  $ CRIM   : num  0.00632 0.02731 0.02729 0.03237 0.06905 ...
  $ ZN     : num  18 0 0 0 0 0 12.5 12.5 12.5 12.5 ...
@@ -77,20 +77,20 @@
 &lt;pre&gt;&lt;code&gt;price &amp;lt;- housing$MEDV
 head(price)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] 24.0 21.6 34.7 33.4 36.2 28.7&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;We check the type of data that it contains, which is numeric in this case.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;class(price)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] &quot;numeric&quot;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;We create a matrix “features” with 506 rows and 13 columns that contains our independent variables.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;features &amp;lt;- as.matrix(housing[,1:13])
 head(features)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
         CRIM ZN INDUS CHAS   NOX    RM  AGE    DIS RAD TAX PTRATIO      B LSTAT
 [1,] 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
 [2,] 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
@@ -102,13 +102,13 @@ head(features)
 &lt;p&gt;We check that we are indeed working with a matrix.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;class(features)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] &quot;matrix&quot; &quot;array&quot;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The function &lt;code&gt;summary&lt;/code&gt; allows us to have a general view of the distribution of the data. We can see the range for each variable, the mean and the quantiles.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;summary(housing)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
       CRIM                ZN             INDUS            CHAS              NOX               RM             AGE              DIS              RAD              TAX           PTRATIO     
  Min.   : 0.00632   Min.   :  0.00   Min.   : 0.46   Min.   :0.00000   Min.   :0.3850   Min.   :3.561   Min.   :  2.90   Min.   : 1.130   Min.   : 1.000   Min.   :187.0   Min.   :12.60  
  1st Qu.: 0.08205   1st Qu.:  0.00   1st Qu.: 5.19   1st Qu.:0.00000   1st Qu.:0.4490   1st Qu.:5.886   1st Qu.: 45.02   1st Qu.: 2.100   1st Qu.: 4.000   1st Qu.:279.0   1st Qu.:17.40  
@@ -126,7 +126,7 @@ head(features)
 
 &lt;pre&gt;&lt;code&gt;summary(price)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 5.00   17.02   21.20   22.53   25.00   50.00&lt;/code&gt;&lt;/pre&gt;
 
@@ -136,7 +136,7 @@ Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 &lt;p&gt;Let’s find out the level of correlation of each variable.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;corr_matrix &amp;lt;- cor(housing); corr_matrix
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT       MEDV
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215 -0.3883046
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946  0.3604453
@@ -169,7 +169,7 @@ min_corr &amp;lt;- which.min(abs(corr_array))
 paste(&quot;The variable with the highest correlation is: &quot;, colnames(housing)[max_corr])
 paste(&quot;The variable with the lowest correlation is: &quot;, colnames(housing)[min_corr])
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
               [,1]
 CRIM    -0.3883046
 ZN       0.3604453
@@ -219,7 +219,7 @@ round(apply(scaled_features2, 2, mean), 2)
 print(&quot;Array of standard deviations by column:&quot;)
 apply(scaled_features2, 2, sd)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] &quot;Array of means by column:&quot;
  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0
 [1] &quot;Array of standard deviations by column:&quot;
@@ -235,7 +235,7 @@ round(apply(scaled_features, 2, mean), 2)
 print(&quot;Array of standard deviations by column:&quot;)
 apply(scaled_features, 2, sd)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] &quot;Array of means by column:&quot;
    CRIM      ZN   INDUS    CHAS     NOX      RM     AGE     DIS     RAD     TAX PTRATIO       B   LSTAT 
       0       0       0       0       0       0       0       0       0       0       0       0       0 
@@ -252,7 +252,7 @@ Where &lt;em&gt;C_X&lt;/em&gt; is the coraviance matrix, &lt;em&gt;n&lt;/em&gt; 
 &lt;p&gt;We can apply the formula as follows.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;t(scaled_features)%*%scaled_features/505
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946
@@ -271,7 +271,7 @@ LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827
 &lt;p&gt;Using the function &lt;code&gt;cov&lt;/code&gt; we will get the same results.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;cov_matrix &amp;lt;- cov(scaled_features); cov_matrix
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946
@@ -294,7 +294,7 @@ LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827
 &lt;p&gt;Let’s calculate the matrix &lt;em&gt;P&lt;/em&gt;.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;P &amp;lt;- eigen(cov_matrix)$vectors; P
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
               [,1]        [,2]        [,3]        [,4]         [,5]        [,6]         [,7]         [,8]        [,9]        [,10]       [,11]        [,12]        [,13]
  [1,]  0.250951397  0.31525237 -0.24656649 -0.06177071  0.082156919 -0.21965961  0.777607207  0.153350477  0.26039028 -0.019369130 -0.10964435  0.086761070  0.045952304
  [2,] -0.256314541  0.32331290 -0.29585782 -0.12871159  0.320616987 -0.32338810 -0.274996280 -0.402680309  0.35813749 -0.267527234  0.26275629 -0.071425278 -0.080918973
@@ -313,14 +313,14 @@ LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827
 &lt;p&gt;Here we can see the eigen values.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;eigen(cov_matrix)$values
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] 6.12684883 1.43327512 1.24261667 0.85757511 0.83481594 0.65740718 0.53535609 0.39609731 0.27694333 0.22023782 0.18601437 0.16930298 0.06350926&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The eigen vector associated with the largest eigen value is usually called “first principal component”. We can calculate how much of the total data variability is the first principal component like this.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;eigen_v &amp;lt;- eigen(cov_matrix)$values
 PC1v &amp;lt;- eigen_v[1]/sum(eigen_v)*100; PC1v
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] 47.12961&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If we wanted to keep, for example, 80% of the variance in our data, we would need to keep the first 5 principal components. This is already a significant reduction to the dimension of our original dataset, we have gone from 13 to 5 columns.&lt;/p&gt;
@@ -332,7 +332,7 @@ PC1v &amp;lt;- eigen_v[1]/sum(eigen_v)*100; PC1v
   }
 }
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 [1] 5
 [1] &quot;Total variance retained: 80.7317820504591&quot;&lt;/code&gt;&lt;/pre&gt;
 
@@ -343,7 +343,7 @@ print(paste(&quot;Most important variable in PC1:&quot;, colnames(housing[max_v]
 max_v2 &amp;lt;- which.max(abs(P[-max_v,1]))
 print(paste(&quot;Second most important variable in PC1:&quot;, colnames(housing[-max_v][max_v2])))
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
  [1]  0.250951397 -0.256314541  0.346672065  0.005042434  0.342852313 -0.189242570  0.313670596 -0.321543866  0.319792768  0.338469147  0.204942258 -0.202972612  0.309759840
 [1] &quot;Most important variable in PC1: INDUS&quot;
 [1] &quot;Second most important variable in PC1: NOX&quot;&lt;/code&gt;&lt;/pre&gt;
@@ -354,7 +354,7 @@ print(paste(&quot;Most important variable in PC2:&quot;, colnames(housing[max_v]
 max_v2 &amp;lt;- which.max(abs(P[-max_v,2]))
 print(paste(&quot;Second most important variable in PC2:&quot;, colnames(housing[-max_v][max_v2])))
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
  [1]  0.31525237  0.32331290 -0.11249291 -0.45482914 -0.21911553 -0.14933154 -0.31197778  0.34907000  0.27152094  0.23945365  0.30589695 -0.23855944  0.07432203
 [1] &quot;Most important variable in PC2: CHAS&quot;
 [1] &quot;Second most important variable in PC2: DIS&quot;&lt;/code&gt;&lt;/pre&gt;
@@ -363,7 +363,7 @@ print(paste(&quot;Second most important variable in PC2:&quot;, colnames(housing
 &lt;pre&gt;&lt;code&gt;T &amp;lt;- scaled_features%*%P
 round(cov(T), 2)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
  [1,] 6.13 0.00 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.00  0.00
  [2,] 0.00 1.43 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.00  0.00
@@ -383,7 +383,7 @@ round(cov(T), 2)
 &lt;p&gt;There is an R built-in function that calculates the principal components for us, &lt;code&gt;prcomp&lt;/code&gt;. It essentially gives us the matrix &lt;em&gt;P&lt;/em&gt; that we calculated previously.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;PCA &amp;lt;- prcomp(features, scale = TRUE); PCA
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 Standard deviations (1, .., p=13):
  [1] 2.4752472 1.1971947 1.1147272 0.9260535 0.9136826 0.8108065 0.7316803 0.6293626 0.5262541 0.4692950 0.4312938 0.4114644 0.2520104
 
@@ -406,7 +406,7 @@ LSTAT    0.309759840 -0.07432203 -0.26700025 -0.06941441  0.394561129 -0.0532158
 &lt;p&gt;We can obtain the matrix &lt;em&gt;T&lt;/em&gt; accessing &lt;code&gt;$x&lt;/code&gt;.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;head(PCA$x)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
            PC1          PC2         PC3       PC4        PC5        PC6       PC7        PC8         PC9        PC10        PC11        PC12         PC13
 [1,] -2.096223  0.772348426  0.34260368 0.8908924  0.4226521 -0.3150264 0.3183257 -0.2955393 -0.42451671 -0.63957348 -0.03296774 -0.01942101  0.365613514
 [2,] -1.455811  0.591399952 -0.69451201 0.4869766 -0.1956820  0.2639620 0.5533137  0.2234488 -0.16679701 -0.08415319 -0.64017631  0.12567304 -0.070649578
@@ -418,7 +418,7 @@ LSTAT    0.309759840 -0.07432203 -0.26700025 -0.06941441  0.394561129 -0.0532158
 &lt;p&gt;In the summary we can also see the cumulative proportion of the variance explained by each vector, as we found out before, if we take the first 5 princip al components, we will be retaining 80.73% of the information in our data.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;summary(PCA)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 Importance of components:
                           PC1    PC2     PC3     PC4     PC5     PC6     PC7     PC8    PC9    PC10    PC11    PC12    PC13
 Standard deviation     2.4752 1.1972 1.11473 0.92605 0.91368 0.81081 0.73168 0.62936 0.5263 0.46930 0.43129 0.41146 0.25201
@@ -436,7 +436,7 @@ Cumulative Proportion  0.4713 0.5816 0.67713 0.74310 0.80732 0.85789 0.89907 0.9
 &lt;pre&gt;&lt;code&gt;model &amp;lt;- lm(formula=scaled_price ~ T5)
 summary(model)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
 Call:
 lm(formula = scaled_price ~ T5)
 
@@ -462,7 +462,7 @@ F-statistic:   230 on 5 and 500 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/
 &lt;p&gt;We obtain a coefficient of determination or R-squared of 0.697. That means our model explains about 70% of the variation in housing prices.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;1-(var(residuals(model))/var(scaled_price))
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPOUT
+&lt;pre class=&quot;output&quot;&gt;&lt;code&gt;## OUTPUT
           [,1]
 [1,] 0.6969794&lt;/code&gt;&lt;/pre&gt;
 
@@ -477,18 +477,25 @@ F-statistic:   230 on 5 and 500 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/
    <updated>2022-08-31T00:00:00-07:00</updated>
    <id>http://localhost:4000/2022/08/31/screenshots_obsidian</id>
    <content type="html">&lt;p&gt;&lt;a href=&quot;https://obsidian.md/&quot;&gt;Obsidian&lt;/a&gt; is an open source app that helps you create a second brain based on a local folder of plain text markdown files.
-I have been using this tool for a while and I love it. I use it to manage my daily and weekly tasks, to track habits, to take notes, to store cooking recipes and much more.
-Today I am going to share how I solved a small issue that I encountered when copying and pasting images to my vault. When you take a screen shot and paste the image to one of your notes, Obsidian adds the image file to your vault and creates an embedded link in your note. This is something I find myself doing very often.
-However, if you later delete the note, or delete the link from your note because you no longer need it, the image file remains in your vault. Overtime, this can create a lot of noise and use unnecessary space in your hard drive. You can manually check which images are not in use and delete them, but it’s time consuming. In order to solve this issue I wrote this simple script that checks if the images in your vault appear in your notes and if they don’t, if removes them. It also outputs a list of deleted images so that you can double check that the correct images were deleted.
-You can check and download the complete script &lt;a href=&quot;https://github.com/BlueDunes/obsidian_cleanup_images.git&quot;&gt;here&lt;/a&gt;.
-Please bear in mind that this code deletes the files permanently. I wrote it for my personal use and share it here in case someone finds it useful. It works for me, but it might not work for you.
-I advise you to:&lt;/p&gt;
+I have been using this tool for a while and I love it. I use it to manage my daily and weekly tasks, to track habits, to take notes, to store cooking recipes and much more.&lt;/p&gt;
+
+&lt;p&gt;Today I am going to share how I solved a small issue that I encountered when copying and pasting images to my vault. &lt;!--more--&gt;When you take a screen shot and paste the image to one of your notes, Obsidian adds the image file to your vault and creates an embedded link in your note. This is something I find myself doing very often.&lt;/p&gt;
+
+&lt;p&gt;However, if you later delete the note, or delete the link from your note because you no longer need it, the image file remains in your vault. Overtime, this can create a lot of noise and use unnecessary space in your hard drive. You can manually check which images are not in use and delete them, but it’s time consuming. In order to solve this issue I wrote this simple script that checks if the images in your vault appear in your notes and if they don’t, if removes them. It also outputs a list of deleted images so that you can double check that the correct images were deleted.&lt;/p&gt;
+
+&lt;p&gt;You can check and download the complete script &lt;a href=&quot;https://github.com/BlueDunes/obsidian_cleanup_images.git&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Please bear in mind that this code deletes the files permanently. I wrote it for my personal use and share it here in case someone finds it useful. It works for me, but it might not work for you.&lt;/p&gt;
+
+&lt;p&gt;I advise you to:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Try the code first commenting the section that deletes the images and check the list of images that the script intends to delete.&lt;/li&gt;
-  &lt;li&gt;Have a backup copy of your vault before running the script.
-Also, this script only deals with .png images and I wrote it for a macOS terminal. If you have some other kind of media file or if you are working on Linux or Windows, you may need to modify the script.
-Let’s check the key parts of the code.&lt;/li&gt;
+  &lt;li&gt;Have a backup copy of your vault before running the script.&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;Also, this script only deals with .png images and I wrote it for a macOS terminal. If you have some other kind of media file or if you are working on Linux or Windows, you may need to modify the script.&lt;/p&gt;
+
+&lt;p&gt;Let’s check the key parts of the code.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;cd PATH_TO_YOUR_VAULT
 &lt;/code&gt;&lt;/pre&gt;
@@ -507,8 +514,9 @@ Let’s check the key parts of the code.&lt;/li&gt;
 
 done
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Finds all the .png files and for each of them cuts the string with the path at the “/” and takes the last part, which is the file name. Later, it counts the occurrences of that image in the vault. &lt;code&gt;-R&lt;/code&gt; means it’s checking inside the current folder and in it’s subfolders. If the image doesn’t appear in the vault, it deletes it and prints the name on the terminal, as well as adding it to a file containing a list of deleted images.
-Before running the file you need to write the path to your vault in the variable “path_to_vault” or next to the &lt;code&gt;cd&lt;/code&gt; command. In order to run the file use on the terminal:&lt;/p&gt;
+&lt;p&gt;Finds all the .png files and for each of them cuts the string with the path at the “/” and takes the last part, which is the file name. Later, it counts the occurrences of that image in the vault. &lt;code&gt;-R&lt;/code&gt; means it’s checking inside the current folder and in it’s subfolders. If the image doesn’t appear in the vault, it deletes it and prints the name on the terminal, as well as adding it to a file containing a list of deleted images.&lt;/p&gt;
+
+&lt;p&gt;Before running the file you need to write the path to your vault in the variable “path_to_vault” or next to the &lt;code&gt;cd&lt;/code&gt; command. In order to run the file use on the terminal:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;./cleanup_image_obs.sh
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;I hope this is useful for someone. And remember, run this code under your own responsibility! It does delete the files permanently!&lt;/p&gt;
