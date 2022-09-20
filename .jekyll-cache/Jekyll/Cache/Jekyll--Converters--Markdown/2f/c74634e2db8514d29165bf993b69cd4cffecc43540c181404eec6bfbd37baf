@@ -1,42 +1,43 @@
----
-layout: post
-title: PCA step by step with R
----
-If we are working with high dimensional data we will most probably want to reduce the dimensionality before we start working on our models. One option we have is to drop features that we consider less relevant, either because they contain a high proportion of missing values, because they have low variance or because their correlation with the target variable is low. Another option, or sometimes a second step after dropping a few columns, is using some kind of regularization technique. Principal Components Analysis (PCA) is a very commonly used one that is based in linear algebra concepts. On top of reducing dimensionality, it also allows us to better represent the information contained in our data by determining which variables are more relevant.
+I"7�<p>If we are working with high dimensional data we will most probably want to reduce the dimensionality before we start working on our models. One option we have is to drop features that we consider less relevant, either because they contain a high proportion of missing values, because they have low variance or because their correlation with the target variable is low. Another option, or sometimes a second step after dropping a few columns, is using some kind of regularization technique. Principal Components Analysis (PCA) is a very commonly used one that is based in linear algebra concepts. On top of reducing dimensionality, it also allows us to better represent the information contained in our data by determining which variables are more relevant.</p>
 
-We will work with the popular Boston Housing dataset available on the UCI Machine Learning Repository [website](https://archive.ics.uci.edu/ml/machine-learning-databases/housing/).
-- The original creators of the dataset are: Harrison, D. and Rubinfeld, D.L.
-- The dataset has no missing values.
-- Number of Instances: 506
-- Number of Attributes: 13 continuous attributes (including "class" attribute "MEDV") and 1 binary-valued attribute.
+<p>We will work with the popular Boston Housing dataset available on the UCI Machine Learning Repository <a href="https://archive.ics.uci.edu/ml/machine-learning-databases/housing/">website</a>.</p>
+<ul>
+  <li>The original creators of the dataset are: Harrison, D. and Rubinfeld, D.L.</li>
+  <li>The dataset has no missing values.</li>
+  <li>Number of Instances: 506</li>
+  <li>Number of Attributes: 13 continuous attributes (including “class” attribute “MEDV”) and 1 binary-valued attribute.</li>
+</ul>
 
-These are the variables:
-1. **CRIM**: per capita crime rate by town
-2. **ZN**: proportion of residential land zoned for lots over 25,000 sq.ft.
-3. **INDUS**: proportion of non-retail business acres per town
-4. **CHAS**: Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
-5. **NOX**: nitric oxides concentration (parts per 10 million)
-6. **RM**: average number of rooms per dwelling
-7. **AGE:** proportion of owner-occupied units built prior to 1940
-8. **DIS:** weighted distances to five Boston employment centres
-9. **RAD**: index of accessibility to radial highways
-10. **TAX**: full-value property-tax rate per $10,000
-11. **PTRATIO**: pupil-teacher ratio by town
-12. **B**: 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town
-13. **LSTAT**: % lower status of the population
-14. **MEDV**: Median value of owner-occupied homes in $1000's
+<p>These are the variables:</p>
+<ol>
+  <li><strong>CRIM</strong>: per capita crime rate by town</li>
+  <li><strong>ZN</strong>: proportion of residential land zoned for lots over 25,000 sq.ft.</li>
+  <li><strong>INDUS</strong>: proportion of non-retail business acres per town</li>
+  <li><strong>CHAS</strong>: Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)</li>
+  <li><strong>NOX</strong>: nitric oxides concentration (parts per 10 million)</li>
+  <li><strong>RM</strong>: average number of rooms per dwelling</li>
+  <li><strong>AGE:</strong> proportion of owner-occupied units built prior to 1940</li>
+  <li><strong>DIS:</strong> weighted distances to five Boston employment centres</li>
+  <li><strong>RAD</strong>: index of accessibility to radial highways</li>
+  <li><strong>TAX</strong>: full-value property-tax rate per $10,000</li>
+  <li><strong>PTRATIO</strong>: pupil-teacher ratio by town</li>
+  <li><strong>B</strong>: 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town</li>
+  <li><strong>LSTAT</strong>: % lower status of the population</li>
+  <li><strong>MEDV</strong>: Median value of owner-occupied homes in $1000’s</li>
+</ol>
 
-In this post we will: 
-- Observe the correlation of the different independent variables with our target variable.
-- Perform a principal components analysis PCA. We will use both dedicated R funcions and the step by step process so that we can better understand what goes on behind the scenes.
-- Build a quick regression model that can be used to predict housing prices based on the features available. Therefore, "MEDV" will be our target variable. This is just a taste of what one could do after PCA.
+<p>In this post we will:</p>
+<ul>
+  <li>Observe the correlation of the different independent variables with our target variable.</li>
+  <li>Perform a principal components analysis PCA. We will use both dedicated R funcions and the step by step process so that we can better understand what goes on behind the scenes.</li>
+  <li>Build a quick regression model that can be used to predict housing prices based on the features available. Therefore, “MEDV” will be our target variable. This is just a taste of what one could do after PCA.</li>
+</ul>
 
-## Preparation of the vectors
-Here we can see the structure of our dataset.
-```
-str(housing)
-```
-<pre  class="output"><code>## OUTPOUT
+<h2 id="preparation-of-the-vectors">Preparation of the vectors</h2>
+<p>Here we can see the structure of our dataset.</p>
+<pre><code>str(housing)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 'data.frame':	506 obs. of  14 variables:
  $ CRIM   : num  0.00632 0.02731 0.02729 0.03237 0.06905 ...
  $ ZN     : num  18 0 0 0 0 0 12.5 12.5 12.5 12.5 ...
@@ -53,27 +54,24 @@ str(housing)
  $ LSTAT  : num  4.98 9.14 4.03 2.94 5.33 ...
  $ MEDV   : num  24 21.6 34.7 33.4 36.2 28.7 22.9 27.1 16.5 18.9 ...</code></pre>
 
-First we generate a price vector containing the variable "MEDV".
-```
-price <- housing$MEDV
+<p>First we generate a price vector containing the variable “MEDV”.</p>
+<pre><code>price &lt;- housing$MEDV
 head(price)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] 24.0 21.6 34.7 33.4 36.2 28.7</code></pre>
 
-We check the type of data that it contains, which is numeric in this case.
-```
-class(price)
-```
-<pre  class="output"><code>## OUTPOUT
+<p>We check the type of data that it contains, which is numeric in this case.</p>
+<pre><code>class(price)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] "numeric"</code></pre>
 
-We create a matrix "features" with 506 rows and 13 columns that contains our independent variables.
-```
-features <- as.matrix(housing[,1:13])
+<p>We create a matrix “features” with 506 rows and 13 columns that contains our independent variables.</p>
+<pre><code>features &lt;- as.matrix(housing[,1:13])
 head(features)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
         CRIM ZN INDUS CHAS   NOX    RM  AGE    DIS RAD TAX PTRATIO      B LSTAT
 [1,] 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
 [2,] 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
@@ -82,18 +80,16 @@ head(features)
 [5,] 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33
 [6,] 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21</code></pre>
 
-We check that we are indeed working with a matrix.
-```
-class(features)
-```
-<pre  class="output"><code>## OUTPOUT
+<p>We check that we are indeed working with a matrix.</p>
+<pre><code>class(features)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] "matrix" "array"</code></pre>
 
-The function `summary` allows us to have a general view of the distribution of the data. We can see the range for each variable, the mean and the quantiles.
-```
-summary(housing)
-```
-<pre  class="output"><code>## OUTPOUT
+<p>The function <code>summary</code> allows us to have a general view of the distribution of the data. We can see the range for each variable, the mean and the quantiles.</p>
+<pre><code>summary(housing)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
       CRIM                ZN             INDUS            CHAS              NOX               RM             AGE              DIS              RAD              TAX           PTRATIO     
  Min.   : 0.00632   Min.   :  0.00   Min.   : 0.46   Min.   :0.00000   Min.   :0.3850   Min.   :3.561   Min.   :  2.90   Min.   : 1.130   Min.   : 1.000   Min.   :187.0   Min.   :12.60  
  1st Qu.: 0.08205   1st Qu.:  0.00   1st Qu.: 5.19   1st Qu.:0.00000   1st Qu.:0.4490   1st Qu.:5.886   1st Qu.: 45.02   1st Qu.: 2.100   1st Qu.: 4.000   1st Qu.:279.0   1st Qu.:17.40  
@@ -109,21 +105,19 @@ summary(housing)
  3rd Qu.:396.23   3rd Qu.:16.95   3rd Qu.:25.00  
  Max.   :396.90   Max.   :37.97   Max.   :50.00</code></pre>
 
-```
-summary(price)
-```
-<pre  class="output"><code>## OUTPOUT
+<pre><code>summary(price)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 5.00   17.02   21.20   22.53   25.00   50.00</code></pre>
 
-We can see that the minimum value of the variable "MEDV" (contained in the array "price") is $5 and the maximum $50. That means that the range is $45. The mean and the median are quite close, $21.20 and $22.53 respectively.
+<p>We can see that the minimum value of the variable “MEDV” (contained in the array “price”) is $5 and the maximum $50. That means that the range is $45. The mean and the median are quite close, $21.20 and $22.53 respectively.</p>
 
-## Correlation coefficients
-Let's find out the level of correlation of each variable.
-```
-corr_matrix <- cor(housing); corr_matrix
-```
-<pre  class="output"><code>## OUTPOUT
+<h2 id="correlation-coefficients">Correlation coefficients</h2>
+<p>Let’s find out the level of correlation of each variable.</p>
+<pre><code>corr_matrix &lt;- cor(housing); corr_matrix
+</code></pre>
+<pre class="output"><code>## OUTPOUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT       MEDV
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215 -0.3883046
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946  0.3604453
@@ -140,25 +134,23 @@ B       -0.38506394  0.17552032 -0.35697654  0.048788485 -0.38005064  0.12806864
 LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827  0.60233853 -0.49699583  0.488676335  0.54399341  0.3740443 -0.36608690  1.0000000 -0.7376627
 MEDV    -0.38830461  0.36044534 -0.48372516  0.175260177 -0.42732077  0.69535995 -0.37695457  0.24992873 -0.381626231 -0.46853593 -0.5077867  0.33346082 -0.7376627  1.0000000</code></pre>
 
-The best way to understand the correlations is visualizing them on a heatmap. For that, we need to load the `corrplot` package.
-```
-library(corrplot)
+<p>The best way to understand the correlations is visualizing them on a heatmap. For that, we need to load the <code>corrplot</code> package.</p>
+<pre><code>library(corrplot)
 corrplot.mixed(corr_matrix, upper="circle", number.cex=.8, tl.cex=.8)
-```
-![Housing correlation plot](/images/2022-09-16/corr_plot.png)
+</code></pre>
+<p><img src="/images/2022-09-16/corr_plot.png" alt="Housing correlation plot" /></p>
 
-We can see that the variables "RAD" and "TAX" are highly correlated, with a correlation coefficient of 0.91. We could consider droping one of them as a way to reduce dimensionality, but in this post we want to concentrate on PCA.
+<p>We can see that the variables “RAD” and “TAX” are highly correlated, with a correlation coefficient of 0.91. We could consider droping one of them as a way to reduce dimensionality, but in this post we want to concentrate on PCA.</p>
 
-Now we zoom in and check the correlation of each feature with the target. The variable with the lowest correlation with the price seems to be "NOX" and the one with the highest correlation "LSTAT". In this case, the correlation coefficient is negative, -0.74, this means that as the % lower status of the population decreases, the median value of the homes increases.
+<p>Now we zoom in and check the correlation of each feature with the target. The variable with the lowest correlation with the price seems to be “NOX” and the one with the highest correlation “LSTAT”. In this case, the correlation coefficient is negative, -0.74, this means that as the % lower status of the population decreases, the median value of the homes increases.</p>
 
-```
-corr_array <- cor(features, price); corr_array
-max_corr <- which.max(abs(corr_array))
-min_corr <- which.min(abs(corr_array))
+<pre><code>corr_array &lt;- cor(features, price); corr_array
+max_corr &lt;- which.max(abs(corr_array))
+min_corr &lt;- which.min(abs(corr_array))
 paste("The variable with the highest correlation is: ", colnames(housing)[max_corr])
 paste("The variable with the lowest correlation is: ", colnames(housing)[min_corr])
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
               [,1]
 CRIM    -0.3883046
 ZN       0.3604453
@@ -176,59 +168,55 @@ LSTAT   -0.7376627
 [1] "The variable with the highest correlation is:  LSTAT"
 [1] "The variable with the lowest correlation is:  CHAS"</code></pre>
 
-We can show as scatter plot of both of them in order to corrobrate this information visually. The first plot clearly shows that "CHAS" is a binary variable with a very low correlation with price.
-```
-plot(price, housing$CHAS, ylab="CHAS", main="Price vs. CHAS")
-```
-![Price vs. CHAS scatter plot](/images/2022-09-16/scatter_price_chas.png)
+<p>We can show as scatter plot of both of them in order to corrobrate this information visually. The first plot clearly shows that “CHAS” is a binary variable with a very low correlation with price.</p>
+<pre><code>plot(price, housing$CHAS, ylab="CHAS", main="Price vs. CHAS")
+</code></pre>
+<p><img src="/images/2022-09-16/scatter_price_chas.png" alt="Price vs. CHAS scatter plot" /></p>
 
-In this plot we do see a better inverse correlation between "LSTAT" and prices.
-```
-plot(price, housing$LSTAT, ylab="LSTAT", main="Price vs. LSTAT")
-```
-![Price vs. CHAS scatter plot](/images/2022-09-16/scatter_price_lstat.png)
+<p>In this plot we do see a better inverse correlation between “LSTAT” and prices.</p>
+<pre><code>plot(price, housing$LSTAT, ylab="LSTAT", main="Price vs. LSTAT")
+</code></pre>
+<p><img src="/images/2022-09-16/scatter_price_lstat.png" alt="Price vs. CHAS scatter plot" /></p>
 
-## PCA step by step
-The variables in our dataset have different scales; for example, "NOX" goes from 0.39 to 0.87, while "TAX" goes from 187 to 711. If we directly apply PCA to the data as is, the features with larger scales will end up having more weight in our model. In order to avoid that, we need to sclale our data. There are different methods, here we will be performing a standardization, such that the resulting distribution will have a mean of 0 and a standard deviation of 1.
+<h2 id="pca-step-by-step">PCA step by step</h2>
+<p>The variables in our dataset have different scales; for example, “NOX” goes from 0.39 to 0.87, while “TAX” goes from 187 to 711. If we directly apply PCA to the data as is, the features with larger scales will end up having more weight in our model. In order to avoid that, we need to sclale our data. There are different methods, here we will be performing a standardization, such that the resulting distribution will have a mean of 0 and a standard deviation of 1.</p>
 
-We can either use the function `scale` or the formula:
-![Scale formula](/images/2022-09-16/scale_formula.svg)
-First, we will try using the formula. We can do that with a for loop to calculate the mean and the standard deviation of each column and then apply the formula to each observation. Later, we calculate the mean and the standard deviation of each feature.
-```
-temp_array <- c()
+<p>We can either use the function <code>scale</code> or the formula:
+<img src="/images/2022-09-16/scale_formula.svg" alt="Scale formula" />
+First, we will try using the formula. We can do that with a for loop to calculate the mean and the standard deviation of each column and then apply the formula to each observation. Later, we calculate the mean and the standard deviation of each feature.</p>
+<pre><code>temp_array &lt;- c()
 for (i in 1:13) {
-  m <- mean(features[,i])
-  s <- sd(features[,i])
+  m &lt;- mean(features[,i])
+  s &lt;- sd(features[,i])
   for (f in features[,i]) {
-    d <- (f-m)/s
-    temp_array <- append(temp_array, d)
+    d &lt;- (f-m)/s
+    temp_array &lt;- append(temp_array, d)
   }
 }
-scaled_features2 <- matrix(temp_array, nrow=506, byrow=FALSE)
+scaled_features2 &lt;- matrix(temp_array, nrow=506, byrow=FALSE)
 
 print("Array of means by column:")
 round(apply(scaled_features2, 2, mean), 2)
 print("Array of standard deviations by column:")
 apply(scaled_features2, 2, sd)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] "Array of means by column:"
  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0
 [1] "Array of standard deviations by column:"
  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1</code></pre>
 
-We obtained the results we expected, the means are 0 and all the standard deviations are 1. We have successfully standardized our data!
+<p>We obtained the results we expected, the means are 0 and all the standard deviations are 1. We have successfully standardized our data!</p>
 
-Now we will see if we get the same results with the function `scale`.
-```
-scaled_features <- scale(features, center = TRUE,scale = TRUE)
+<p>Now we will see if we get the same results with the function <code>scale</code>.</p>
+<pre><code>scaled_features &lt;- scale(features, center = TRUE,scale = TRUE)
 
 print("Array of means by column:")
 round(apply(scaled_features, 2, mean), 2)
 print("Array of standard deviations by column:")
 apply(scaled_features, 2, sd)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] "Array of means by column:"
    CRIM      ZN   INDUS    CHAS     NOX      RM     AGE     DIS     RAD     TAX PTRATIO       B   LSTAT 
       0       0       0       0       0       0       0       0       0       0       0       0       0 
@@ -236,17 +224,16 @@ apply(scaled_features, 2, sd)
    CRIM      ZN   INDUS    CHAS     NOX      RM     AGE     DIS     RAD     TAX PTRATIO       B   LSTAT 
       1       1       1       1       1       1       1       1       1       1       1       1       1</code></pre>
 
-Once more, we obtain means equal to 0 and standard deviations equal to 1.
+<p>Once more, we obtain means equal to 0 and standard deviations equal to 1.</p>
 
-Once we have our standardized values we need to calculate the covariance matrix. For that, we can, either use the formula or the function `cov`. The formula to calculate the coraviance matrix is:
-![Covariance formula](/images/2022-09-16/covariance_formula.svg)
-Where *C_X* is the coraviance matrix, *n* is the total number of observations, *X* is the matrix with our scaled data.
+<p>Once we have our standardized values we need to calculate the covariance matrix. For that, we can, either use the formula or the function <code>cov</code>. The formula to calculate the coraviance matrix is:
+<img src="/images/2022-09-16/covariance_formula.svg" alt="Covariance formula" />
+Where <em>C_X</em> is the coraviance matrix, <em>n</em> is the total number of observations, <em>X</em> is the matrix with our scaled data.</p>
 
-We can apply the formula as follows.
-```
-t(scaled_features)%*%scaled_features/505
-```
-<pre  class="output"><code>## OUTPOUT
+<p>We can apply the formula as follows.</p>
+<pre><code>t(scaled_features)%*%scaled_features/505
+</code></pre>
+<pre class="output"><code>## OUTPOUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946
@@ -262,11 +249,10 @@ PTRATIO  0.28994558 -0.39167855  0.38324756 -0.121515174  0.18893268 -0.35550149
 B       -0.38506394  0.17552032 -0.35697654  0.048788485 -0.38005064  0.12806864 -0.27353398  0.29151167 -0.444412816 -0.44180801 -0.1773833  1.00000000 -0.3660869
 LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827  0.60233853 -0.49699583  0.488676335  0.54399341  0.3740443 -0.36608690  1.0000000</code></pre>
 
-Using the function `cov` we will get the same results.
-```
-cov_matrix <- cov(scaled_features); cov_matrix
-```
-<pre  class="output"><code>## OUTPOUT
+<p>Using the function <code>cov</code> we will get the same results.</p>
+<pre><code>cov_matrix &lt;- cov(scaled_features); cov_matrix
+</code></pre>
+<pre class="output"><code>## OUTPOUT
                CRIM          ZN       INDUS         CHAS         NOX          RM         AGE         DIS          RAD         TAX    PTRATIO           B      LSTAT
 CRIM     1.00000000 -0.20046922  0.40658341 -0.055891582  0.42097171 -0.21924670  0.35273425 -0.37967009  0.625505145  0.58276431  0.2899456 -0.38506394  0.4556215
 ZN      -0.20046922  1.00000000 -0.53382819 -0.042696719 -0.51660371  0.31199059 -0.56953734  0.66440822 -0.311947826 -0.31456332 -0.3916785  0.17552032 -0.4129946
@@ -282,15 +268,14 @@ PTRATIO  0.28994558 -0.39167855  0.38324756 -0.121515174  0.18893268 -0.35550149
 B       -0.38506394  0.17552032 -0.35697654  0.048788485 -0.38005064  0.12806864 -0.27353398  0.29151167 -0.444412816 -0.44180801 -0.1773833  1.00000000 -0.3660869
 LSTAT    0.45562148 -0.41299457  0.60379972 -0.053929298  0.59087892 -0.61380827  0.60233853 -0.49699583  0.488676335  0.54399341  0.3740443 -0.36608690  1.0000000</code></pre>
 
-This covariance matrix measures the level of lineal correlation of each pair of variables. Since our values are standardized, this matrix is the same as the correlation matrix we calculated earlier on. The values on the main diagonal correspond to the variance of each variable, in this case they are all 1.
+<p>This covariance matrix measures the level of lineal correlation of each pair of variables. Since our values are standardized, this matrix is the same as the correlation matrix we calculated earlier on. The values on the main diagonal correspond to the variance of each variable, in this case they are all 1.</p>
 
-With the PCA we want to find a transformation matrix *P* that multiplied with our strandardized matrix *X* gives us a matrix *T*, such that if we calculate the covariance matrix of *T* we obtain a diagonal matrix. (The items outside the main diagonal are all 0.). *P* is a matrix where the columns are the eigen vectors of the covariance matrix *C_X* and the covariance matrix of the transformed data *T* will have the eigen values on the main diagonal. These are usually organized from largest to smallest.
+<p>With the PCA we want to find a transformation matrix <em>P</em> that multiplied with our strandardized matrix <em>X</em> gives us a matrix <em>T</em>, such that if we calculate the covariance matrix of <em>T</em> we obtain a diagonal matrix. (The items outside the main diagonal are all 0.). <em>P</em> is a matrix where the columns are the eigen vectors of the covariance matrix <em>C_X</em> and the covariance matrix of the transform data <em>T</em> will have the eigen values on the main diagonal. These are usually organized from largest to smallest.</p>
 
-Let's calculate the matrix *P*.
-```
-P <- eigen(cov_matrix)$vectors; P
-```
-<pre  class="output"><code>## OUTPOUT
+<p>Let’s calculate the matrix <em>P</em>.</p>
+<pre><code>P &lt;- eigen(cov_matrix)$vectors; P
+</code></pre>
+<pre class="output"><code>## OUTPOUT
               [,1]        [,2]        [,3]        [,4]         [,5]        [,6]         [,7]         [,8]        [,9]        [,10]       [,11]        [,12]        [,13]
  [1,]  0.250951397  0.31525237 -0.24656649 -0.06177071  0.082156919 -0.21965961  0.777607207  0.153350477  0.26039028 -0.019369130 -0.10964435  0.086761070  0.045952304
  [2,] -0.256314541  0.32331290 -0.29585782 -0.12871159  0.320616987 -0.32338810 -0.274996280 -0.402680309  0.35813749 -0.267527234  0.26275629 -0.071425278 -0.080918973
@@ -306,66 +291,60 @@ P <- eigen(cov_matrix)$vectors; P
 [12,] -0.202972612 -0.23855944  0.30014590 -0.16849850 -0.345606947 -0.80345454  0.070294759 -0.004922915 -0.04489802  0.096515117  0.01927490  0.041723158 -0.004463073
 [13,]  0.309759840  0.07432203  0.26700025 -0.06941441  0.394561129 -0.05321583  0.087011169 -0.424352926 -0.19522139  0.600711409  0.27138243  0.055225960  0.024431677</code></pre>
 
-Here we can see the eigen values.
-```
-eigen(cov_matrix)$values
-```
-<pre  class="output"><code>## OUTPOUT
+<p>Here we can see the eigen values.</p>
+<pre><code>eigen(cov_matrix)$values
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] 6.12684883 1.43327512 1.24261667 0.85757511 0.83481594 0.65740718 0.53535609 0.39609731 0.27694333 0.22023782 0.18601437 0.16930298 0.06350926</code></pre>
 
-The eigen vector associated with the largest eigen value is usually called "first principal component". We can calculate how much of the total data variability is the first principal component like this.
-```
-eigen_v <- eigen(cov_matrix)$values
-PC1v <- eigen_v[1]/sum(eigen_v)*100; PC1v
-```
-<pre  class="output"><code>## OUTPOUT
+<p>The eigen vector associated with the largest eigen value is usually called “first principal component”. We can calculate how much of the total data variability is the first principal component like this.</p>
+<pre><code>eigen_v &lt;- eigen(cov_matrix)$values
+PC1v &lt;- eigen_v[1]/sum(eigen_v)*100; PC1v
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] 47.12961</code></pre>
 
-If we wanted to keep, for example, 80% of the variance in our data, we would need to keep the first 5 principal components. This is already a significant reduction to the dimension of our original dataset, we have gone from 13 to 5 columns.
-```
-for(nPC in 1:13){
-  if ((sum(eigen_v[1:nPC])/sum(eigen_v)*100) > 80){
+<p>If we wanted to keep, for example, 80% of the variance in our data, we would need to keep the first 5 principal components. This is already a significant reduction to the dimension of our original dataset, we have gone from 13 to 5 columns.</p>
+<pre><code>for(nPC in 1:13){
+  if ((sum(eigen_v[1:nPC])/sum(eigen_v)*100) &gt; 80){
     print(nPC)
     print(paste("Total variance retained:", sum(eigen_v[1:nPC])/sum(eigen_v)*100))
     break
   }
 }
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 [1] 5
 [1] "Total variance retained: 80.7317820504591"</code></pre>
 
-From our eigen vectors we can also figure out which variables are more important to each of the principal components. We can see, for example, that the two most important variables in the first principal component are "INDUS" and "NOX". And the two most important variables in the second principal component are "CHAS" and "DIS".
-```
-P[,1]
-max_v <- which.max(abs(P[,1]))
+<p>From our eigen vectors we can also figure out which variables are more important to each of the principal components. We can see, for example, that the two most important variables in the first principal component are “INDUS” and “NOX”. And the two most important variables in the second principal component are “CHAS” and “DIS”.</p>
+<pre><code>P[,1]
+max_v &lt;- which.max(abs(P[,1]))
 print(paste("Most important variable in PC1:", colnames(housing[max_v])))
-max_v2 <- which.max(abs(P[-max_v,1]))
+max_v2 &lt;- which.max(abs(P[-max_v,1]))
 print(paste("Second most important variable in PC1:", colnames(housing[-max_v][max_v2])))
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
  [1]  0.250951397 -0.256314541  0.346672065  0.005042434  0.342852313 -0.189242570  0.313670596 -0.321543866  0.319792768  0.338469147  0.204942258 -0.202972612  0.309759840
 [1] "Most important variable in PC1: INDUS"
 [1] "Second most important variable in PC1: NOX"</code></pre>
 
-```
-P[,2]
-max_v <- which.max(abs(P[,2]))
+<pre><code>P[,2]
+max_v &lt;- which.max(abs(P[,2]))
 print(paste("Most important variable in PC2:", colnames(housing[max_v])))
-max_v2 <- which.max(abs(P[-max_v,2]))
+max_v2 &lt;- which.max(abs(P[-max_v,2]))
 print(paste("Second most important variable in PC2:", colnames(housing[-max_v][max_v2])))
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
  [1]  0.31525237  0.32331290 -0.11249291 -0.45482914 -0.21911553 -0.14933154 -0.31197778  0.34907000  0.27152094  0.23945365  0.30589695 -0.23855944  0.07432203
 [1] "Most important variable in PC2: CHAS"
 [1] "Second most important variable in PC2: DIS"</code></pre>
 
-Using the matrix *P* we can calculate our transformed matrix *T* and we can see that the covariance matrix of *T* is a diagonal matrix, the diagonal of which contains the eigen values.
-```
-T <- scaled_features%*%P
+<p>Using the matrix $P$ we can calculate our transformed matrix $T$ and we can see that the covariance matrix of T is a diagonal matrix, the diagonal of which contains the eigen values.</p>
+<pre><code>T &lt;- scaled_features%*%P
 round(cov(T), 2)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
  [1,] 6.13 0.00 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.00  0.00
  [2,] 0.00 1.43 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.00  0.00
@@ -381,12 +360,11 @@ round(cov(T), 2)
 [12,] 0.00 0.00 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.17  0.00
 [13,] 0.00 0.00 0.00 0.00 0.00 0.00 0.00  0.0 0.00  0.00  0.00  0.00  0.06</code></pre>
 
-## PCA using prcomp()
-There is an R built-in function that calculates the principal components for us, `prcomp`. It essentially gives us the matrix *P* that we calculated previously.
-```
-PCA <- prcomp(features, scale = TRUE); PCA
-```
-<pre  class="output"><code>## OUTPOUT
+<h2 id="pca-using-prcomp">PCA using prcomp()</h2>
+<p>There is an R built-in function that calculates the principal components for us, <code>prcomp</code>. It essentially gives us the matrix $P$ that we calculated previously.</p>
+<pre><code>PCA &lt;- prcomp(features, scale = TRUE); PCA
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 Standard deviations (1, .., p=13):
  [1] 2.4752472 1.1971947 1.1147272 0.9260535 0.9136826 0.8108065 0.7316803 0.6293626 0.5262541 0.4692950 0.4312938 0.4114644 0.2520104
 
@@ -406,11 +384,10 @@ PTRATIO  0.204942258 -0.30589695 -0.32344627 -0.28262198 -0.584002232  0.2731533
 B       -0.202972612  0.23855944 -0.30014590 -0.16849850 -0.345606947 -0.80345454  0.070294759  0.004922915 -0.04489802  0.096515117  0.01927490 -0.041723158 -0.004463073
 LSTAT    0.309759840 -0.07432203 -0.26700025 -0.06941441  0.394561129 -0.05321583  0.087011169  0.424352926 -0.19522139  0.600711409  0.27138243 -0.055225960  0.024431677</code></pre>
 
-We can obtain the matrix *T* accessing `$x`.
-```
-head(PCA$x)
-```
-<pre  class="output"><code>## OUTPOUT
+<p>We can obtain the matrix $T$ accessing <code>$x</code>.</p>
+<pre><code>head(PCA$x)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
            PC1          PC2         PC3       PC4        PC5        PC6       PC7        PC8         PC9        PC10        PC11        PC12         PC13
 [1,] -2.096223  0.772348426  0.34260368 0.8908924  0.4226521 -0.3150264 0.3183257 -0.2955393 -0.42451671 -0.63957348 -0.03296774 -0.01942101  0.365613514
 [2,] -1.455811  0.591399952 -0.69451201 0.4869766 -0.1956820  0.2639620 0.5533137  0.2234488 -0.16679701 -0.08415319 -0.64017631  0.12567304 -0.070649578
@@ -419,32 +396,28 @@ head(PCA$x)
 [5,] -2.455755  0.097615346 -0.07527372 0.4274838 -1.0648705  0.6164372 0.7043889  0.1343911 -0.41725486  0.14074052 -0.39475923 -0.49723967  0.014260153
 [6,] -2.212662 -0.009477633 -0.67171636 0.1757362 -0.6265676  0.5708543 0.6505396 -0.1095817 -0.47347313 -0.37045163 -0.52705986 -0.30476248 -0.038886671</code></pre>
 
-In the summary we can also see the cumulative proportion of the variance explained by each vector, as we found out before, if we take the first 5 princip al components, we will be retaining 80.73% of the information in our data.
-```
-summary(PCA)
-```
-<pre  class="output"><code>## OUTPOUT
+<p>In the summary we can also see the cumulative proportion of the variance explained by each vector, as we found out before, if we take the first 5 princip al components, we will be retaining 80.73% of the information in our data.</p>
+<pre><code>summary(PCA)
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 Importance of components:
                           PC1    PC2     PC3     PC4     PC5     PC6     PC7     PC8    PC9    PC10    PC11    PC12    PC13
 Standard deviation     2.4752 1.1972 1.11473 0.92605 0.91368 0.81081 0.73168 0.62936 0.5263 0.46930 0.43129 0.41146 0.25201
 Proportion of Variance 0.4713 0.1103 0.09559 0.06597 0.06422 0.05057 0.04118 0.03047 0.0213 0.01694 0.01431 0.01302 0.00489
 Cumulative Proportion  0.4713 0.5816 0.67713 0.74310 0.80732 0.85789 0.89907 0.92954 0.9508 0.96778 0.98209 0.99511 1.00000</code></pre>
 
-## Linear regression example
-We can use the first 5 columns of our matrix *T* to create a linear regression model that could be used to predict the housing prices. We won't go into much detail, but it is an example of a use case for our transformed data.
-```
-T5 <- T[,1: 5]
-```
-We need to scale the target variable as well so that it matches the rest of our data.
-```
-scaled_price <- scale(price, center = TRUE, scale = TRUE)
-```
-We use our transformed matrix to calculate a linear regression model.
-```
-model <- lm(formula=scaled_price ~ T5)
+<h2 id="linear-regression-example">Linear regression example</h2>
+<p>We can use the first 5 columns of our matrix T to create a linear regression model that could be used to predict the housing prices. We won’t go into much detail, but it is an example of a use case for our transformed data.</p>
+<pre><code>T5 &lt;- T[,1: 5]
+</code></pre>
+<p>We need to scale the target variable as well so that it matches the rest of our data.</p>
+<pre><code>scaled_price &lt;- scale(price, center = TRUE, scale = TRUE)
+</code></pre>
+<p>We use our transformed matrix to calculate a linear regression model.</p>
+<pre><code>model &lt;- lm(formula=scaled_price ~ T5)
 summary(model)
-```
-<pre  class="output"><code>## OUTPOUT
+</code></pre>
+<pre class="output"><code>## OUTPOUT
 Call:
 lm(formula = scaled_price ~ T5)
 
@@ -453,27 +426,27 @@ Residuals:
 -2.1486 -0.3146 -0.0824  0.1878  3.5987 
 
 Coefficients:
-              Estimate Std. Error t value Pr(>|t|)    
+              Estimate Std. Error t value Pr(&gt;|t|)    
 (Intercept) -3.428e-16  2.459e-02   0.000        1    
-T51         -2.471e-01  9.946e-03 -24.850  < 2e-16 ***
-T52         -2.387e-01  2.056e-02 -11.606  < 2e-16 ***
-T53         -3.807e-01  2.208e-02 -17.237  < 2e-16 ***
+T51         -2.471e-01  9.946e-03 -24.850  &lt; 2e-16 ***
+T52         -2.387e-01  2.056e-02 -11.606  &lt; 2e-16 ***
+T53         -3.807e-01  2.208e-02 -17.237  &lt; 2e-16 ***
 T54          1.175e-01  2.658e-02   4.420 1.21e-05 ***
-T55         -2.428e-01  2.694e-02  -9.012  < 2e-16 ***
+T55         -2.428e-01  2.694e-02  -9.012  &lt; 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 0.5532 on 500 degrees of freedom
 Multiple R-squared:  0.697,	Adjusted R-squared:  0.6939 
-F-statistic:   230 on 5 and 500 DF,  p-value: < 2.2e-16</code></pre>
+F-statistic:   230 on 5 and 500 DF,  p-value: &lt; 2.2e-16</code></pre>
 
-We obtain a coefficient of determination or R-squared of 0.697. That means our model explains about 70% of the variation in housing prices.
-```
-1-(var(residuals(model))/var(scaled_price))
-```
-<pre  class="output"><code>## OUTPOUT
+<p>We obtain a coefficient of determination or R-squared of 0.697. That means our model explains about 70% of the variation in housing prices.</p>
+<pre><code>1-(var(residuals(model))/var(scaled_price))
+</code></pre>
+<pre class="output"><code>## OUTPOUT
           [,1]
 [1,] 0.6969794</code></pre>
 
-## Conclusion
-In this post we have learned how to analyze the correlations between variables. We have also performed a PCA analysis step by step and then we have seen how to do the same easily using `prcomp()`. Finally, we have seen a simple example of a linear regression model obtained from the transformed data that we generated in our PCA.
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post we have learned how to analyze the correlations between variables. We have also performed a PCA analysis step by step and then we have seen how to do the same easily using <code>prcomp()</code>. Finally, we have seen a simple example of a linear regression model obtained from the transformed data that we generated in our PCA.</p>
+:ET

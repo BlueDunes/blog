@@ -1,5 +1,5 @@
 # Dependencies
-markdown:         redcarpet
+markdown:         kramdown
 highlighter:      pygments
 
 # Permalinks
@@ -13,3 +13,6 @@ url:              https://bluedunes.github.io
 baseurl:          
 
 paginate:         5
+
+plugins:
+  - jekyll-paginate
