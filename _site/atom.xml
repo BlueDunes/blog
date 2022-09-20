@@ -4,7 +4,7 @@
  <title>DataMary</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2022-09-20T13:30:30-07:00</updated>
+ <updated>2022-09-20T14:08:58-07:00</updated>
  <id>http://localhost:4000</id>
  <author>
    <name></name>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>PCA step by step with R</title>
-   <link href="http://localhost:4000/2022/09/16/PCA_R/"/>
-   <updated>2022-09-16T00:00:00-07:00</updated>
-   <id>http://localhost:4000/2022/09/16/PCA_R</id>
+   <link href="http://localhost:4000/2022/09/20/PCA_R/"/>
+   <updated>2022-09-20T00:00:00-07:00</updated>
+   <id>http://localhost:4000/2022/09/20/PCA_R</id>
    <content type="html">&lt;p&gt;If we are working with high dimensional data we will most probably want to reduce the dimensionality before we start working on our models. One option we have is to drop features that we consider less relevant, either because they contain a high proportion of missing values, because they have low variance or because their correlation with the target variable is low. Another option, or sometimes a second step after dropping a few columns, is using some kind of regularization technique. Principal Components Analysis (PCA) is a very commonly used one that is based in linear algebra concepts. &lt;!--more--&gt;On top of reducing dimensionality, it also allows us to better represent the information contained in our data by determining which variables are more relevant.&lt;/p&gt;
 
 &lt;p&gt;We will work with the popular Boston Housing dataset available on the UCI Machine Learning Repository &lt;a href=&quot;https://archive.ics.uci.edu/ml/machine-learning-databases/housing/&quot;&gt;website&lt;/a&gt;.&lt;/p&gt;

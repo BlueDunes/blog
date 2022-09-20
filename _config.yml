@@ -11,9 +11,18 @@ tagline:          'Data Science'
 description:      'Data Science and more'
 url:              https://bluedunes.github.io
 baseurl:
-excerpt_separator: <!--more-->  
 
 paginate:         5
 
 plugins:
   - jekyll-paginate
+  
+# Default front matter values
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+      type: "posts"
+    values:
+      layout: post
+      excerpt_separator: <!--more-->
