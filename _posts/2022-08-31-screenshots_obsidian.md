@@ -3,8 +3,8 @@ layout: post
 title: Clearing images from Obsidian
 excerpt_separator: <!--more-->
 tags:
-  - shell
-  - obsidian
+  - "shell"
+  - "obsidian"
 ---
 [Obsidian](https://obsidian.md/) is an open source app that helps you create a second brain based on a local folder of plain text markdown files.
 I have been using this tool for a while and I love it. I use it to manage my daily and weekly tasks, to track habits, to take notes, to store cooking recipes and much more.

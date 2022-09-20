@@ -120,6 +120,48 @@ ul, ol, dl {
   margin-bottom: 1rem;
 }
 
+/* Tags */
+.tag-box {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow: hidden;
+  *zoom: 1;
+}
+
+.tag-box:before, .tag-box:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+
+.tag-box:after {
+  clear: both;
+}
+
+.tag-box.inline li {
+  float: left;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 2.5;
+}
+
+.tag-box a {
+  padding: 4px 6px;
+  margin: 2px;
+  background-color: #F2F2F2;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.tag-box a span {
+  vertical-align: super;
+  font-size: 10px;
+  font-size: 0.625rem;
+}
+
 dt {
   font-weight: bold;
 }
@@ -335,7 +377,9 @@ tbody tr:nth-child(odd) th {
 
 .page,
 .post {
-  margin-bottom: 4em;
+  margin-bottom: 2em;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
 }
 
 /* Blog post or page title */
@@ -357,11 +401,14 @@ tbody tr:nth-child(odd) th {
   color: #9a9a9a;
 }
 
+/* Tags in posts */
+.tags {
+  padding-bottom: 1rem;
+}
+
 /* Related posts */
 .related {
-  padding-top: 2rem;
   padding-bottom: 2rem;
-  border-top: 1px solid #eee;
 }
 .related-posts {
   padding-left: 0;
