@@ -4,13 +4,27 @@
  <title>DataMary</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2022-09-20T15:45:03-07:00</updated>
+ <updated>2022-11-28T15:25:57-08:00</updated>
  <id>http://localhost:4000</id>
  <author>
    <name></name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>Pie Chart</title>
+   <link href="http://localhost:4000/2022/11/28/visualitzacio_pie_chart/"/>
+   <updated>2022-11-28T00:00:00-08:00</updated>
+   <id>http://localhost:4000/2022/11/28/visualitzacio_pie_chart</id>
+   <content type="html">&lt;h2 id=&quot;generació-denergia-elèctrica-a-espanya&quot;&gt;Generació d’energia elèctrica a Espanya&lt;/h2&gt;
+&lt;p&gt;(Del 21/11/2022 al 28/11/2022)&lt;/p&gt;
+
+&lt;p&gt;Tamany segons GWh generats en una setmana.
+&lt;img src=&quot;/images/2022-11-28/pie_chart.png&quot; alt=&quot;Pie Chart&quot; /&gt;
+Font de dades: Red eléctrica de España&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>PCA step by step with R</title>
